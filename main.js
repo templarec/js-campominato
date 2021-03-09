@@ -13,8 +13,26 @@
 var bombs = []; //inizializzo array bombe
 var safe = []; //inizializzo array safe
 //chiedo livello difficoltà
-var maxNumber = prompt("Selezione difficoltà", "100");
-
+var maxNumber = parseInt(prompt("Selezione difficoltà (0 = facile | 1 = media | 2 difficile)", 0));
+var difficolta;
+switch (maxNumber) {
+	case 0:
+		maxNumber = 100;
+		difficolta = "facile";
+		break;
+	case 1:
+		maxNumber = 80;
+		difficolta = "media";
+		break;
+	case 2:
+		maxNumber = 50;
+		difficolta = "difficile";
+		break;
+	default:
+		difficolta = "facile";
+		maxNumber = 100;
+}
+console.log("Hai selezionato la difficoltà: " + difficolta + " (" + maxNumber + ")");
 //funzione genera numeri
 function genRandNum(min, max) {
 	return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -28,23 +46,31 @@ function generateBombs(array, max) {
 
 		}
 	}
-	console.log(array); //debug
+	//console.log(array); //debug
 	return array; //restituisci array di 16
 }
 //funzione principale del gioco
 function mineSweeper (bombs, safe, maxnumber) {
+	generateBombs(bombs, maxnumber);
 	while (safe.length < maxnumber - 16){ // finchè array safe è minore di maxNumber - 16
 		//chiedi numero da utente e parsalo in intero
 		var input = parseInt(prompt("Inserisci un numero da 1 a " + maxnumber + "! Buona fortuna!"));
-		if (!isNaN(input) && 1 <= input && input <= 100 && !safe.includes(input)){ // se non è un non numero &&
+		if (!isNaN(input) && 1 <= input && input <= maxnumber && !safe.includes(input)){ // se non è un non numero &&
 			//maggiore uguale ad 1 && minore uguale a 100 && non è già in array
-			safe.push(input); //inseriscilo
-		} else {
-			return safe.length;// spara fuori a quanto è arrivato
+			if (!bombs.includes(input)){ // se non è tra le bombe
+				safe.push(input); //inseriscilo
+			} else {
+				return safe.length;// spara fuori a quanto è arrivato
+			}
 		}
 	}
 	return safe.length; //ho finito tutto il safe (hai vinto!)
 }
 
-var result = mineSweeper(bombs, safe, maxNumber);
-console.log("Game over! Punteggio: " + result );
+var result = parseInt(mineSweeper(bombs, safe, maxNumber));
+if (result < maxNumber - 16){
+	console.log("BOOOOM!");
+	console.log("Game over! Punteggio: " + result + " su " + (maxNumber - 16) );
+} else {
+	console.log("Hai vinto! Punteggio: " + result + " su " + (maxNumber - 16) );
+}
